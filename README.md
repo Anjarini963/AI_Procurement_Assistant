@@ -1,14 +1,14 @@
-## AI Procurement Assistant
+# AI Procurement Assistant
 
 An AI-powered procurement assistant that answers natural-language questions about procurement data using LLM-powered agents and MongoDB.
 
-### Prerequisites
+## Prerequisites
 
 - Python 3.12
 - MongoDB instance (local or cloud, e.g. MongoDB Atlas)
 - OpenAI API key (must support tools/function calling and work with LangChain)
 
-### Quick Start
+## Quick Start
 
 1. **Install dependencies**
 
@@ -55,7 +55,7 @@ start_server.bat
 
 The server will start at `http://127.0.0.1:8000`
 
-### Using the Assistant
+## Using the Assistant
 
 Once the server is running, you can:
 
@@ -65,8 +65,7 @@ Once the server is running, you can:
   - "Which quarter has the highest total spending?"
   - "What are the top 10 most frequently ordered line items?"
 
-
-### Project Structure
+## Project Structure
 
 - `app/` – FastAPI application and agent logic
 - `scripts/` – Data loading utilities
