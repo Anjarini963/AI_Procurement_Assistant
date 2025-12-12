@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Procurement Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI Procurement Assistant</h1>
+            <button id="newChatBtn" class="new-chat-btn">Start New Chat</button>
+        </div>
+        
+        <div class="chat-container" id="chatContainer">
+            <div class="welcome-message">
+                <p>Welcome! I can help you analyze the California procurement dataset. Ask me anything!</p>
+                <p class="attribution">Project by Abdullah Aktam Anjrini for Penny Software as part of an assessment.</p>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <textarea 
+                id="messageInput" 
+                placeholder="Type your question here..." 
+                rows="1"
+                maxlength="2000"
+            ></textarea>
+            <button id="sendBtn" class="send-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <script src="/static/script.js"></script>
+</body>
+</html>
+
