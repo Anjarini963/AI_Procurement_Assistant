@@ -13,6 +13,16 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 
 from .db import get_procurement_collection, get_all_field_names
+from .projection_tools import (
+    predict_spending_trends,
+    identify_growth_commodities,
+    recommend_suppliers_by_price,
+    recommend_statewide_contracts,
+    predict_trends_by_category,
+    identify_declining_items,
+    predict_seasonal_patterns,
+    forecast_price_trends,
+)
 
 load_dotenv()
 
@@ -24,6 +34,14 @@ You MUST use tools to answer questions about the data.
 You have access to the following tools:
 - get_schema_tool: returns the field names of the procurement collection.
 - run_mongo_aggregation: executes a MongoDB aggregation pipeline with automatic pre-processing stages.
+- predict_spending_trends: predicts future spending (overall or by department/commodity/supplier) using linear regression.
+- identify_growth_commodities: identifies commodities with positive growth trends in spending.
+- recommend_suppliers_by_price: recommends suppliers with historically lower unit prices for items/commodities.
+- recommend_statewide_contracts: identifies items suitable for statewide contracts based on volume, spending, and cross-department usage.
+- predict_trends_by_category: predicts trends for categories (departments, suppliers, items, commodities). Accepts a search_term and automatically searches across multiple fields (Item Description, Commodity, Department Name, Supplier Name). If one field doesn't have data, it tries others automatically.
+- identify_declining_items: identifies items with declining usage/spending that might need attention.
+- predict_seasonal_patterns: identifies seasonal patterns in spending (by month/quarter) and predicts future seasonal trends.
+- forecast_price_trends: forecasts future unit price trends for items or commodities.
 
 CRITICAL RULES:
 1. You MUST NOT answer from reasoning alone.
@@ -75,11 +93,36 @@ MONGODB SYNTAX REMINDERS:
 - Aggregation stage operators must use the dollar-prefixed names: match, group, sort, limit, project, addFields, unwind, lookup.
 - Field references also use a single dollar sign, such as TotalPriceClean, Year, Quarter.
 
+WHEN TO USE PROJECTION TOOLS:
+- For questions about predicting future spending or forecasting trends: use predict_spending_trends (can predict overall or by department/commodity/supplier).
+- For questions about which commodities are growing or likely to grow: use identify_growth_commodities.
+- For questions about finding cheaper suppliers or price comparisons: use recommend_suppliers_by_price.
+- For questions about statewide contracts, volume-based recommendations, or items used across departments: use recommend_statewide_contracts.
+- For general trend predictions by any category (departments, suppliers, items, commodities, etc.) over time: use predict_trends_by_category. This tool can search for a term across multiple fields automatically (e.g., search_term="office supplies" will search in Item Description, Commodity, Department Name, and Supplier Name).
+- For identifying items with declining usage or spending: use identify_declining_items.
+- For questions about seasonal patterns, peak months/quarters, or seasonal forecasting: use predict_seasonal_patterns.
+- For forecasting price trends or future unit prices: use forecast_price_trends.
+
+EXAMPLES OF PREDICTION QUESTIONS YOU CAN ANSWER:
+- "Predict spending by department for next year"
+- "Which items are declining in usage?"
+- "What are the seasonal spending patterns?"
+- "Forecast price trends for office supplies"
+- "Predict which suppliers will have the most orders next quarter"
+- "Identify departments with increasing spending trends"
+- "What items show declining trends that might need attention?"
+- "Predict spending for Q1 2025 based on historical patterns"
+- "Which commodities have the strongest growth trends?"
+- "Forecast unit prices for medical supplies over the next year"
+- "What are the peak spending months?"
+- "Predict total orders for next year by department"
+
 ALWAYS:
 - Use TotalPriceClean, UnitPriceClean, and QuantityClean for numeric calculations.
 - Use Year, FiscalYearClean, Month, and Quarter for time-based questions.
 - Call get_schema_tool if you need to inspect the raw field names.
 - If the results include null or missing grouping keys, explain that clearly in your summary.
+- For predictive/forecasting questions, use the appropriate projection tool instead of just run_mongo_aggregation.
 """
 
 
@@ -172,8 +215,8 @@ async def run_mongo_aggregation(pipeline: Any = None, **kwargs) -> str:
 
     pipeline = _normalize_pipeline(pipeline)
 
-    # Numeric cleaning: convert to double/int, treat errors/null as 0,
-    # EXCEPT FiscalYearClean where we keep null if it's invalid or missing.
+    # converts to double/int, treats errors and nulls as 0,
+    # Keeps FiscalYear as Null if it's invalid or missing.
     numeric_cast_stage = {
         "$addFields": {
             "TotalPriceClean": {
@@ -203,7 +246,7 @@ async def run_mongo_aggregation(pipeline: Any = None, **kwargs) -> str:
             "FiscalYearClean": {
                 "$convert": {
                     "input": {
-                        # Take the first 4 bytes/chars of "Fiscal Year", e.g. "2013" from "2013-2014"
+                        # first 4 chars of "Fiscal Year", ex: "2013" from "2013-2014"
                         "$substrBytes": ["$Fiscal Year", 0, 4]
                     },
                     "to": "int",
@@ -214,9 +257,9 @@ async def run_mongo_aggregation(pipeline: Any = None, **kwargs) -> str:
         }
     }
 
-    # Filter out obviously invalid / NaN-ish totals:
-    # - For normal numbers, TotalPriceClean >= 0 is true.
-    # - For NaN values, the comparison fails and those docs are dropped.
+    # Filters invalid and NaN values (which caused errors):
+    #   For normal numbers, TotalPriceClean >= 0 is true.
+    #   For NaN values, the comparison fails and those rows are dropped.
     numeric_filter_stage = {
         "$match": {
             "TotalPriceClean": {"$gte": 0}
@@ -224,8 +267,8 @@ async def run_mongo_aggregation(pipeline: Any = None, **kwargs) -> str:
     }
 
     # Date normalization:
-    # Prefer "Creation Date", fall back to "Purchase Date".
-    # Dates are in "MM/DD/YYYY" format, e.g. "03/12/2014".
+    # Always prefer "Creation Date", fall back to "Purchase Date", as "Purchase Date" is missing for some records.
+    # Dates are normalized in "MM/DD/YYYY" format, e.g. "03/12/2014".
     date_normalization_stage = {
         "$addFields": {
             "CreationDateClean": {
@@ -282,7 +325,18 @@ async def run_mongo_aggregation(pipeline: Any = None, **kwargs) -> str:
 
 def _build_agent_executor() -> AgentExecutor:
     llm = _get_llm()
-    tools = [get_schema_tool, run_mongo_aggregation]
+    tools = [
+        get_schema_tool,
+        run_mongo_aggregation,
+        predict_spending_trends,
+        identify_growth_commodities,
+        recommend_suppliers_by_price,
+        recommend_statewide_contracts,
+        predict_trends_by_category,
+        identify_declining_items,
+        predict_seasonal_patterns,
+        forecast_price_trends,
+    ]
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -312,6 +366,7 @@ def get_agent_executor() -> AgentExecutor:
 
 # In-memory storage for chat histories (session-based)
 # Structure: {session_id: [HumanMessage, AIMessage, ...]}
+# This gives the assistant context of the conversation.
 _chat_histories: Dict[str, List[BaseMessage]] = {}
 
 
@@ -341,7 +396,7 @@ def update_chat_history(session_id: Optional[str], user_message: str, ai_message
 
 
 async def answer_question(user_query: str, session_id: Optional[str] = None) -> Dict[str, Any]:
-    """Answer a question using the agent, with optional chat history context."""
+    """Answer a question using the agent, with chat history context if available."""
     executor = get_agent_executor()
     chat_history = get_chat_history(session_id)
     

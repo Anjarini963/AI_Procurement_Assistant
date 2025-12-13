@@ -1,6 +1,45 @@
 # AI Procurement Assistant
 
-An AI-powered procurement assistant that answers natural-language questions about procurement data using LLM-powered agents and MongoDB.
+An AI-powered procurement assistant that answers natural-language questions about procurement data using LLM-powered agents and MongoDB. The assistant provides both historical analysis and predictive forecasting capabilities, enabling users to gain insights into procurement patterns, trends, and future projections.
+
+## Overview
+
+This application combines LangChain agents with MongoDB to create an intelligent procurement analytics system. Users can ask questions in natural language, and the agent automatically selects and executes the appropriate tools to analyze procurement data, identify trends, and make predictions about future spending, demand, pricing, and more.
+
+### Key Features
+
+- **Natural Language Querying**: Ask questions in plain English about procurement data
+- **Historical Analysis**: Query spending, orders, suppliers, departments, and commodities
+- **Predictive Analytics**: Forecast future spending, identify growth trends, predict seasonal patterns
+- **Price Analysis**: Compare supplier prices, forecast price trends, identify cost-saving opportunities
+- **Strategic Recommendations**: Get suggestions for statewide contracts, declining items, and optimization opportunities
+
+## Prediction & Forecasting Capabilities
+
+The assistant includes **8 projection tools** that enable comprehensive forecasting:
+
+1. **predict_spending_trends**: Predict future spending (overall or by department/commodity/supplier) using linear regression
+2. **predict_trends_by_category**: General-purpose tool to predict trends for any category over time periods (year/quarter/month)
+3. **identify_growth_commodities**: Identify commodities with positive growth trends
+4. **identify_declining_items**: Find items with declining usage/spending that need attention
+5. **predict_seasonal_patterns**: Identify seasonal spending patterns and predict future seasonal trends
+6. **forecast_price_trends**: Forecast future unit price trends for items or commodities
+7. **recommend_suppliers_by_price**: Recommend suppliers with historically lower unit prices
+8. **recommend_statewide_contracts**: Identify items suitable for statewide contracts based on volume and cross-department usage
+
+**Example Prediction Questions:**
+- "Predict the likely total spending for next year based on trends"
+- "Predict spending by department for 2025"
+- "Which items are declining in usage?"
+- "What are the seasonal spending patterns?"
+- "Forecast price trends for medical supplies"
+- "Predict which suppliers will have the most orders next quarter"
+- "Identify departments with increasing spending trends"
+- "Which commodities have the strongest growth trends?"
+- "Recommend suppliers with historically lower unit prices for office chairs"
+- "Which items should be put into statewide contracts based on volume?"
+
+The prediction tools use statistical methods including linear regression, CAGR calculations, seasonal analysis, and time series forecasting, all working with cleaned and normalized data from MongoDB.
 
 ## Prerequisites
 
@@ -60,10 +99,26 @@ The server will start at `http://127.0.0.1:8000`
 Once the server is running, you can:
 
 - **Access the web interface**: Open `http://127.0.0.1:8000` in your browser
-- **Chat with the agent**: Ask questions like:
-  - "How many orders were created in Q1 2023?"
-  - "Which quarter has the highest total spending?"
-  - "What are the top 10 most frequently ordered line items?"
+- **Chat with the agent**: Ask questions in natural language
+
+### Example Questions
+
+**Historical Analysis:**
+- "How many orders were created in Q1 2023?"
+- "Which quarter has the highest total spending?"
+- "What are the top 10 most frequently ordered line items?"
+- "Which department spent the most in 2014?"
+- "Which supplier received the most money overall?"
+
+**Predictions & Forecasting:**
+- "Predict the likely total spending for next year based on trends"
+- "Predict spending by department for 2025"
+- "Identify commodities likely to grow in spending"
+- "Which items are declining in usage?"
+- "What are the seasonal spending patterns?"
+- "Forecast price trends for medical supplies"
+- "Recommend suppliers with historically lower unit prices for office chairs"
+- "Which items should be put into statewide contracts based on volume?"
 
 ## Project Structure
 
