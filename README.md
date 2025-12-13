@@ -101,7 +101,7 @@ Once the server is running, you can:
 - **Access the web interface**: Open `http://127.0.0.1:8000` in your browser
 - **Chat with the agent**: Ask questions in natural language
 
-###Example Questions
+### Example Questions
 
 **High-Level Spending Analysis:**
 
