@@ -101,24 +101,68 @@ Once the server is running, you can:
 - **Access the web interface**: Open `http://127.0.0.1:8000` in your browser
 - **Chat with the agent**: Ask questions in natural language
 
-### Example Questions
+###Example Questions
 
-**Historical Analysis:**
-- "How many orders were created in Q1 2023?"
-- "Which quarter has the highest total spending?"
-- "What are the top 10 most frequently ordered line items?"
-- "Which department spent the most in 2014?"
-- "Which supplier received the most money overall?"
+**High-Level Spending Analysis:**
 
-**Predictions & Forecasting:**
-- "Predict the likely total spending for next year based on trends"
-- "Predict spending by department for 2025"
-- "Identify commodities likely to grow in spending"
-- "Which items are declining in usage?"
-- "What are the seasonal spending patterns?"
-- "Forecast price trends for medical supplies"
-- "Recommend suppliers with historically lower unit prices for office chairs"
-- "Which items should be put into statewide contracts based on volume?"
+"What is the total spending per fiscal year?"
+
+"Which fiscal year had the highest total spending?"
+
+"How did overall spending change from 2012 to 2015?"
+
+"What is the average spending per purchase order over time?"
+
+"Which department spent the most in a given fiscal year?"
+
+**Procurement Methods & Purchasing Channels:**
+
+"Which acquisition methods were used most frequently?"
+
+"Which acquisition method accounts for the highest total spending?"
+
+"How many purchases were made using CalCard versus standard purchase orders?"
+
+"Are certain departments more likely to use specific acquisition methods?"
+
+"Which Leveraged Procurement Agreements (LPAs) were used most often?"
+
+**Commodity & Classification Analysis:**
+
+"Which commodity titles represent the highest total spending?"
+
+"Which UNSPSC segments dominate procurement spending?"
+
+"How does spending vary across families and classes?"
+
+"Which commodities experienced the largest year-to-year spending changes?"
+
+"What are the most commonly purchased items?"
+
+**Supplier-Focused Analysis:**
+
+"Which suppliers received the highest total payments?"
+
+"What is the average order value for a specific supplier?"
+
+"Which suppliers received the largest single purchase orders?"
+
+"Which departments rely most heavily on a single supplier?"
+
+"What geographic patterns exist based on supplier ZIP codes?"
+
+**Operational & Lookup Queries:**
+
+"Retrieve a purchase order by Purchase Order Number"
+
+"List all purchase orders for a specific department and year"
+
+"Find all purchases created or purchased on a specific date"
+
+"Show all purchases where the item description contains a specific keyword"
+
+"List all purchases with a unit price above a defined threshold"
+
 
 ## Project Structure
 
