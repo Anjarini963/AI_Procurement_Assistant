@@ -27,17 +27,6 @@ The assistant includes **8 projection tools** that enable comprehensive forecast
 7. **recommend_suppliers_by_price**: Recommend suppliers with historically lower unit prices
 8. **recommend_statewide_contracts**: Identify items suitable for statewide contracts based on volume and cross-department usage
 
-**Example Prediction Questions:**
-- "Predict the likely total spending for next year based on trends"
-- "Predict spending by department for 2025"
-- "Which items are declining in usage?"
-- "What are the seasonal spending patterns?"
-- "Forecast price trends for medical supplies"
-- "Predict which suppliers will have the most orders next quarter"
-- "Identify departments with increasing spending trends"
-- "Which commodities have the strongest growth trends?"
-- "Recommend suppliers with historically lower unit prices for office chairs"
-- "Which items should be put into statewide contracts based on volume?"
 
 The prediction tools use statistical methods including linear regression, CAGR calculations, seasonal analysis, and time series forecasting, all working with cleaned and normalized data from MongoDB.
 
